@@ -1,26 +1,34 @@
 <?php 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $recipient_email = "assignmentnext.com"; //  owner's email address
+    $recipient_email = ".com"; // Owner's email address
+
+    // Get form inputs
     $sender_name = $_POST["name"];
     $sender_email = $_POST["email"];
     $subject = $_POST["subject"];
     $message = $_POST["message"];
 
+    // Validation (you can add more validation as needed)
+    if (empty($sender_name) || empty($sender_email) || empty($subject) || empty($message)) {
+        echo "<script>alert('Please fill in all required fields.');</script>";
+        echo "<script>window.location.href='your_form_page.html';</script>";
+        exit; // Exit to prevent further execution
+    }
+
     // Handle file upload
-    if(!empty($_FILES['document']['name'])){
-    $target_dir = "uploads/"; // Create a directory named 'uploads' in the same directory as this script
+    $target_dir = "uploads/";
     $target_file = $target_dir . basename($_FILES["document"]["name"]);
     $file_extension = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-
-    // Define the allowed file extensions
     $allowed_extensions = array("pdf", "doc", "docx", "ppt", "pptx", "xls", "xlsx", "jpg", "jpeg", "png");
 
     if (in_array($file_extension, $allowed_extensions)) {
         move_uploaded_file($_FILES["document"]["tmp_name"], $target_file);
-    }else {
+    } else {
         echo "<script>alert('Invalid file type. Please upload a PDF, Word, PowerPoint, Excel, JPEG, JPG, or PNG file.');</script>";
+        echo "<script>window.location.href='your_form_page.html';</script>";
+        exit; // Exit to prevent further execution
     }
-}
+
     // Compose email
     $headers = "From: $sender_name <$sender_email>";
     $headers .= "\r\nReply-To: $sender_email";
@@ -35,8 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <h2>Contact Form Submission</h2>
         <p><strong>Name:</strong> $sender_name</p>
         <p><strong>Email:</strong> $sender_email</p>
-        <p><strong>subject:</strong> $sender_email</p>
-        <p><strong>subject:</strong> $subject</p>
+        <p><strong>Subject:</strong> $subject</p>
         <p><strong>Message:</strong> $message</p>
     </body>
     </html>";
@@ -59,9 +66,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (mail($recipient_email, $subject, $email_message, $headers)) {
         echo "<script>alert('Your Quote has been sent successfully');</script>";
         echo "<script>window.location.href='product.html';</script>";
-    } else {
-        echo "<script>alert('Error In Sending your Quote');</script>";
-        echo "<script>window.location.href='product.html';</script>";
-    }
+     } else {
+         echo "<script>alert('Error In Sending your Quote');</script>";
+         echo "<script>window.location.href='index.html';</script>";
+     }
 }
 ?>
